@@ -1,0 +1,33 @@
+﻿<views:MvxWindow x:Class="VisitorsInCompany.View.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:views="clr-namespace:MvvmCross.Platforms.Wpf.Views;assembly=MvvmCross.Platforms.Wpf"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="450" Width="800" Closed="MvxWindow_Closed" Topmost="True" WindowStyle="None" WindowState="Maximized" Background="White"><!--Background="#e4bfb9"-->
+   <!--Background="{DynamicResource MaterialDesignPaper}"
+        TextElement.Foreground="{DynamicResource MaterialDesignBody}"-->
+   <!--<Window.Resources>
+      <ResourceDictionary>
+         <DataTemplate DataType="{x:Type vm:MainScreenVM}">
+            <ctrls:MainScreenControl/>
+         </DataTemplate>
+         <DataTemplate DataType="{x:Type vm:CreateUserVM}">
+            <ctrls:CreateUserControl/>
+         </DataTemplate>
+      </ResourceDictionary>
+   </Window.Resources>-->
+   <Grid>
+      <!--<Grid.RowDefinitions>
+         <RowDefinition Height="Auto" MinHeight="45"/>
+         <RowDefinition Height="3"/>
+         <RowDefinition Height="*"/>
+      </Grid.RowDefinitions>
+      --><!--ToolBar меню--><!--
+      <ToolBar/>
+
+      --><!--Основное--><!--
+      <ContentPresenter Content="{Binding CurrentContentVM}" Grid.Row="2"/>-->
+   </Grid>
+</views:MvxWindow>
