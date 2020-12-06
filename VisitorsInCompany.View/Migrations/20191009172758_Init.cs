@@ -10,8 +10,7 @@ namespace VisitorsInCompany.Migrations
                 name: "Visitors",
                 columns: table => new
                 {
-                    Id = table.Column<int>(nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
+                    Id = table.Column<int>(nullable: false).Annotation("Sqlite:Autoincrement", true),
                     FirstName = table.Column<string>(nullable: false),
                     LastName = table.Column<string>(nullable: false),
                     Patronymic = table.Column<string>(nullable: true),
@@ -30,8 +29,7 @@ namespace VisitorsInCompany.Migrations
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropTable(
-                name: "Visitors");
+            migrationBuilder.DropTable(name: "Visitors");
         }
     }
 }
