@@ -1,5 +1,5 @@
 ﻿
-namespace VisitorsInCompany.Models
+namespace VisitorsInCompany.Model.Models
 {
     public class Admin
     {

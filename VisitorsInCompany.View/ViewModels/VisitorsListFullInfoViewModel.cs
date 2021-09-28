@@ -1,18 +1,20 @@
-﻿
-namespace VisitorsInCompany.ViewModels
-{
-    using MvvmCross.Commands;
-    using MvvmCross.Navigation;
-    using MvvmCross.ViewModels;
-    using System.Collections.Generic;
-    using System.Collections.ObjectModel;
-    using System.Threading.Tasks;
-    using VisitorsInCompany.Interfaces;
+﻿using MvvmCross.Commands;
+using MvvmCross.Navigation;
+using MvvmCross.ViewModels;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Threading.Tasks;
+using AutoMapper;
+using MediatR;
+using VisitorsInCompany.Contracts.Visitors.Queries;
 
+namespace VisitorsInCompany.View.ViewModels
+{
     public class VisitorsListFullInfoViewModel : MvxViewModel
     {
         private readonly IMvxNavigationService _navigationService;
-        private readonly IRepository _repo;
+        private readonly IMediator _mediator;
+        private readonly IMapper _mapper;
 
         private VisitorViewModel _currentVisitor;
 
@@ -28,21 +30,19 @@ namespace VisitorsInCompany.ViewModels
             }
         }
 
-        public VisitorsListFullInfoViewModel(IMvxNavigationService navigationService, IRepository repo)
+        public VisitorsListFullInfoViewModel(IMvxNavigationService navigationService, IMediator mediator, IMapper mapper)
         {
             _navigationService = navigationService;
-            _repo = repo;
+            _mediator = mediator;
+            _mapper = mapper;
         }
 
         public ObservableCollection<VisitorViewModel> Visitors { get; private set; }
 
         public override async Task Initialize()
         {
-            List<VisitorViewModel> viewModels = new List<VisitorViewModel>();
-            foreach (var item in _repo.GetNotExitVisitors())
-                viewModels.Add(new VisitorViewModel(item));
-
-            Visitors = new ObservableCollection<VisitorViewModel>(viewModels);
+            var visitors = _mapper.Map<IEnumerable<VisitorViewModel>>(await _mediator.Send(new GetNotExitVisitorsQuery()));
+            Visitors = new ObservableCollection<VisitorViewModel>(visitors);
             await base.Initialize();
         }
 

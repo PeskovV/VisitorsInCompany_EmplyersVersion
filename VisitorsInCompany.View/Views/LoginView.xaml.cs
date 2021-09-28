@@ -1,21 +1,8 @@
 ﻿using MvvmCross.Platforms.Wpf.Views;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using VisitorsInCompany.ViewModels;
+using VisitorsInCompany.View.ViewModels;
 
-namespace VisitorsInCompany.Views
+namespace VisitorsInCompany.View.Views
 {
    /// <summary>
    /// Interaction logic for LoginView.xaml
@@ -32,7 +19,7 @@ namespace VisitorsInCompany.Views
       {
          if (e.Key == Key.Enter)
          {
-            (this.DataContext as LoginViewModel).LoginCommand.Execute(password);
+            (DataContext as LoginViewModel).LoginCommand.Execute(password);
             e.Handled = true;
          }
       }

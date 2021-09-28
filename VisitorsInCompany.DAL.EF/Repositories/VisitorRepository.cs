@@ -1,12 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using VisitorsInCompany.Data;
-using VisitorsInCompany.Interfaces;
+using VisitorsInCompany.DAL.EF;
+using VisitorsInCompany.Model.Models;
+using VisitorsInCompany.Model.Repositories;
 
-namespace VisitorsInCompany.Models
+namespace VisitorsInCompany.DAL.EF.Repositories
 {
     public class VisitorRepository : IRepository
     {
@@ -31,31 +30,8 @@ namespace VisitorsInCompany.Models
             _context.SaveChanges();
         }
 
-        public IEnumerable<Visitor> GetAllVisitors() =>
-           _context.Visitors.ToArray();
-
-        public IEnumerable<Visitor> GetNotExitVisitors() =>
-            _context.Visitors.Where(v => string.IsNullOrWhiteSpace(v.ExitTime)).ToArray();
-
         public Visitor GetVisitor(Visitor visitor) =>
             _context.Visitors.SingleOrDefault(v => v.Id == visitor.Id);
-
-        public void RemoveFromOrganization(Visitor visitor)
-        {
-            /*var vis = _context.Visitors.FirstOrDefault(v =>
-            (v.FirstName == visitor.FirstName) &&
-            (v.LastName == visitor.LastName) &&
-            (v.Organization == visitor.Organization));*/
-            var vis = _context.Visitors.SingleOrDefault(v => v.Id == visitor.Id);
-
-            if (vis == null)
-                return;
-
-            vis.ExitTime = visitor.ExitTime;
-
-            _context.Visitors.Update(vis);
-            _context.SaveChanges();
-        }
 
         public void SetExitTime(Visitor visitor, DateTime exitTime) =>
             visitor.ExitTime = exitTime.ToString();

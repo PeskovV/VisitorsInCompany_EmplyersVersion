@@ -6,9 +6,9 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using VisitorsInCompany.Helpers;
-using VisitorsInCompany.ViewModels;
+using VisitorsInCompany.View.ViewModels;
 
-namespace VisitorsInCompany.Views
+namespace VisitorsInCompany.View.Views
 {
    /// <summary>
    /// Interaction logic for CurrentVisitorReportView.xaml

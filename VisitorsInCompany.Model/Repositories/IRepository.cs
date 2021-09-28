@@ -1,10 +1,9 @@
-﻿
-namespace VisitorsInCompany.Interfaces
-{
-    using System;
-    using System.Collections.Generic;
-    using VisitorsInCompany.Models;
+﻿using VisitorsInCompany.Model.Models;
+using System;
+using System.Collections.Generic;
 
+namespace VisitorsInCompany.Model.Repositories
+{
     public interface IRepository
     {
         void Add(Visitor visitor);

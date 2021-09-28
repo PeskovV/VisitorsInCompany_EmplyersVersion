@@ -1,20 +1,18 @@
-﻿
-namespace VisitorsInCompany.ViewModels
-{
-    using MvvmCross.Commands;
-    using MvvmCross.Navigation;
-    using MvvmCross.ViewModels;
-    using System;
-    using System.Collections.Generic;
-    using System.IO;
-    using System.Linq;
-    using System.Threading.Tasks;
-    using System.Windows;
-    using System.Windows.Threading;
-    using VisitorsInCompany.Helpers;
-    using VisitorsInCompany.Interfaces;
-    using VisitorsInCompany.Views;
+﻿using MvvmCross.Commands;
+using MvvmCross.Navigation;
+using MvvmCross.ViewModels;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Threading;
+using VisitorsInCompany.Helpers;
+using VisitorsInCompany.Views;
 
+namespace VisitorsInCompany.View.ViewModels
+{
     public class ReportsViewModel : MvxViewModel
     {
         private readonly IMvxNavigationService _navigationService;

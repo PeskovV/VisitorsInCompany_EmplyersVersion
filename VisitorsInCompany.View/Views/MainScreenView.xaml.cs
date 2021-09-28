@@ -1,6 +1,4 @@
 ﻿using MvvmCross.Platforms.Wpf.Views;
-using System.Windows.Input;
-using VisitorsInCompany.ViewModels;
 
 namespace VisitorsInCompany.View.Views
 {

@@ -14,7 +14,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace VisitorsInCompany.Views
+namespace VisitorsInCompany.View.Views
 {
    /// <summary>
    /// Interaction logic for ReportsView.xaml

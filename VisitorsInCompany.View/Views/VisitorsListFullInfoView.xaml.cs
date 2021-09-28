@@ -1,6 +1,6 @@
 ﻿using MvvmCross.Platforms.Wpf.Views;
 
-namespace VisitorsInCompany.Views
+namespace VisitorsInCompany.View.Views
 {
    /// <summary>
    /// Interaction logic for VisitorsListFullInfoView.xaml

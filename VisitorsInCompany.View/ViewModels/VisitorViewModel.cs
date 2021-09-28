@@ -1,44 +1,130 @@
-﻿
-namespace VisitorsInCompany.ViewModels
-{
-    using MvvmCross.ViewModels;
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Text;
-    using System.Threading.Tasks;
-    using VisitorsInCompany.Models;
+﻿using MvvmCross.ViewModels;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
+namespace VisitorsInCompany.View.ViewModels
+{ 
     public class VisitorViewModel : MvxViewModel
     {
         private string _fullName;
+        private string _firstName;
+        private string _lastName;
+        private string _patronymic;
+        private string _organization;
+        private string _visitGoal;
+        private string _attendant;
+        private string _note;
+        private string _entryTime;
+        private string _exitTime;
 
-        public Visitor Visitor { get; set; }
-        public string FullName
+        public string FirstName
         {
-            get
-            {
-                if (string.IsNullOrWhiteSpace(_fullName))
-                    return ($"{Visitor.LastName} {Visitor.FirstName} {Visitor.Patronymic}").TrimStart();
-                return _fullName;
-            }
+            get => _firstName;
             set
             {
-                _fullName = value.TrimStart();
-                Visitor.FirstName = GetFirstName(_fullName);
-                Visitor.LastName = GetLastName(_fullName);
-                Visitor.Patronymic = GetPatronymic(_fullName);
-                RaisePropertyChanged(() => FullName);
+                _firstName = value;
+                RaisePropertyChanged(() => FirstName);
+            }
+        }
+        
+        public string LastName
+        {
+            get => _lastName;
+            set
+            {
+                _lastName = value;
+                RaisePropertyChanged(() => LastName);
             }
         }
 
-        public string Organization
+
+        public string Patronymic
         {
-            get => Visitor.Organization;
+            get => _patronymic;
             set
             {
-                Visitor.Organization = value;
+                _patronymic = value;
+                RaisePropertyChanged(() => Patronymic);
+            }
+        }
+        
+        public string Organization
+        {
+            get => _organization;
+            set
+            {
+                _organization = value;
                 RaisePropertyChanged(() => Organization);
+            }
+        }
+        
+        public string VisitGoal
+        {
+            get
+            {
+                if (string.IsNullOrEmpty(_visitGoal))
+                    _visitGoal = VisitGoals.FirstOrDefault();
+
+                return _visitGoal;
+            }
+            set
+            {
+                _visitGoal = value;
+                RaisePropertyChanged(() => VisitGoal);
+            }
+        }
+
+        public string Attendant
+        {
+            get => _attendant;
+            set
+            {
+                _attendant = value;
+                RaisePropertyChanged(() => Attendant);
+            }
+        }
+
+        public string Note
+        {
+            get => _note;
+            set
+            {
+                _note = value;
+                RaisePropertyChanged(() => Note);
+            }
+        }
+        
+        public string EntryTime
+        {
+            get => _entryTime;
+            set
+            {
+                _entryTime = value;
+                RaisePropertyChanged(() => EntryTime);
+            }
+        }
+
+        public string ExitTime
+        {
+            get => _exitTime;
+            set
+            {
+                _exitTime = value;
+                RaisePropertyChanged(() => ExitTime);
+            }
+        }
+        
+        public string FullName
+        {
+            get => string.IsNullOrWhiteSpace(_fullName) ? $"{LastName} {FirstName} {Patronymic}".TrimStart() : _fullName;
+            set
+            {
+                _fullName = value.TrimStart();
+                FirstName = GetFirstName(_fullName);
+                LastName = GetLastName(_fullName);
+                Patronymic = GetPatronymic(_fullName);
+                RaisePropertyChanged(() => FullName);
             }
         }
 
@@ -50,52 +136,6 @@ namespace VisitorsInCompany.ViewModels
                 "Training/Обучение",
                 "Maintenance/Проведение работ"
             };
-
-        public string VisitGoal
-        {
-            get
-            {
-                if (string.IsNullOrEmpty(Visitor.VisitGoal))
-                    Visitor.VisitGoal = VisitGoals.FirstOrDefault();
-
-                return Visitor.VisitGoal;
-            }
-            set
-            {
-                Visitor.VisitGoal = value;
-                RaisePropertyChanged(() => VisitGoal);
-            }
-        }
-
-        public string Attendant
-        {
-            get => Visitor.Attendant;
-            set
-            {
-                Visitor.Attendant = value;
-                RaisePropertyChanged(() => Attendant);
-            }
-        }
-
-        public string Note
-        {
-            get => Visitor.Note;
-            set
-            {
-                Visitor.Note = value;
-                RaisePropertyChanged(() => Note);
-            }
-        }
-
-        public VisitorViewModel()
-        {
-            Visitor = new Visitor();
-        }
-
-        public VisitorViewModel(Visitor visitor)
-        {
-            Visitor = visitor ?? new Visitor();
-        }
 
         public override async Task Initialize() =>
             await base.Initialize();

@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using VisitorsInCompany.Models;
+using VisitorsInCompany.Model.Models;
 
-namespace VisitorsInCompany.Data
+namespace VisitorsInCompany.DAL.EF
 {
     public class AppDbContext : DbContext
     {

@@ -2,22 +2,13 @@
 using MvvmCross.Navigation;
 using MvvmCross.ViewModels;
 using System;
-using System.Collections.Generic;
-using System.Diagnostics;
 using System.Globalization;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
-using VisitorsInCompany.Data;
 using VisitorsInCompany.Helpers;
-using VisitorsInCompany.Interfaces;
-using VisitorsInCompany.Models;
 
-namespace VisitorsInCompany.ViewModels
+namespace VisitorsInCompany.View.ViewModels
 {
     public class CreateUserViewModel : MvxViewModel
     {

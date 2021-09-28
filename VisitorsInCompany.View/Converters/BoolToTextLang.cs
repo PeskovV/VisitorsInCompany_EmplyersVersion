@@ -1,10 +1,9 @@
-﻿
-namespace VisitorsInCompany.Converters
-{
-    using System;
-    using System.Globalization;
-    using System.Windows.Data;
+﻿using System;
+using System.Globalization;
+using System.Windows.Data;
 
+namespace VisitorsInCompany.View.Converters
+{
     public class BoolToTextLang : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)

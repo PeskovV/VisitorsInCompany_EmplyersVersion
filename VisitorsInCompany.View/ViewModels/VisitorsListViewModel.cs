@@ -1,23 +1,34 @@
-﻿
-namespace VisitorsInCompany.ViewModels
-{
-    using MvvmCross.Commands;
-    using MvvmCross.Navigation;
-    using MvvmCross.ViewModels;
-    using System;
-    using System.Collections.Generic;
-    using System.Collections.ObjectModel;
-    using System.Globalization;
-    using System.Threading.Tasks;
-    using System.Windows;
-    using System.Windows.Input;
-    using VisitorsInCompany.Helpers;
-    using VisitorsInCompany.Interfaces;
+﻿using MvvmCross.Commands;
+using MvvmCross.Navigation;
+using MvvmCross.ViewModels;
+using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Globalization;
+using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Input;
+using AutoMapper;
+using MediatR;
+using VisitorsInCompany.Contracts.Visitors;
+using VisitorsInCompany.Contracts.Visitors.Commands;
+using VisitorsInCompany.Contracts.Visitors.Queries;
+using VisitorsInCompany.Helpers;
 
+namespace VisitorsInCompany.View.ViewModels
+{
     public class VisitorsListViewModel : MvxViewModel
     {
+        public VisitorsListViewModel(IMvxNavigationService navigationService, IMediator mediator, IMapper mapper)
+        {
+            _navigationService = navigationService;
+            _mediator = mediator;
+            _mapper = mapper;
+        }
+        
         private readonly IMvxNavigationService _navigationService;
-        private readonly IRepository _repo;
+        private readonly IMediator _mediator;
+        private readonly IMapper _mapper;
 
         private VisitorViewModel _currentVisitor;
         private bool _isRussian = InputLanguageManager.Current.CurrentInputLanguage.Name == "ru-RU";
@@ -49,19 +60,10 @@ namespace VisitorsInCompany.ViewModels
             }
         }
 
-        public VisitorsListViewModel(IMvxNavigationService navigationService, IRepository repo)
-        {
-            _navigationService = navigationService;
-            _repo = repo;
-        }
-
         public override async Task Initialize()
         {
-            List<VisitorViewModel> viewModels = new List<VisitorViewModel>();
-            foreach (var item in _repo.GetNotExitVisitors())
-                viewModels.Add(new VisitorViewModel(item));
-
-            Visitors = new ObservableCollection<VisitorViewModel>(viewModels);
+            var visitors = _mapper.Map<IEnumerable<VisitorViewModel>>(await _mediator.Send(new GetNotExitVisitorsQuery()));
+            Visitors = new ObservableCollection<VisitorViewModel>(visitors);
             await base.Initialize();
         }
 
@@ -70,8 +72,9 @@ namespace VisitorsInCompany.ViewModels
             var result = MessageBox.Show("Вы уверены?\\Are you shure?", "Warning", MessageBoxButton.YesNo, MessageBoxImage.Question);
             if (result == MessageBoxResult.Yes)
             {
-                CurrentVisitor.Visitor.ExitTime = DateTime.Now.ToString();
-                _repo.RemoveFromOrganization(CurrentVisitor.Visitor);
+                CurrentVisitor.ExitTime = DateTime.Now.ToString();
+                var dto = _mapper.Map<VisitorDto>(CurrentVisitor);
+                await _mediator.Send(new RemoveVisitorFromOrganizationCommand(dto));
                 Visitors.Remove(CurrentVisitor);
 
                 await _navigationService.Navigate<MainScreenViewModel>();

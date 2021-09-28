@@ -1,16 +1,8 @@
 ﻿using MvvmCross;
 using MvvmCross.IoC;
 using MvvmCross.ViewModels;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using VisitorsInCompany.Data;
-using VisitorsInCompany.Interfaces;
-using VisitorsInCompany.Models;
 
-namespace VisitorsInCompany
+namespace VisitorsInCompanyMain
 {
    class CustomApp : MvxApplication
    {
@@ -19,7 +11,6 @@ namespace VisitorsInCompany
          Mvx.IoCProvider.ConstructAndRegisterSingleton<AppDbContext, AppDbContext>();
          Mvx.IoCProvider.RegisterType<IRepository, VisitorRepository>();
          RegisterCustomAppStart<AppStart>();
-         //RegisterAppStart<MainScreenViewModel>();
       }
    }
 }

@@ -1,17 +1,14 @@
-﻿
-namespace VisitorsInCompany.ViewModels
-{
-    using MvvmCross.Commands;
-    using MvvmCross.Navigation;
-    using MvvmCross.ViewModels;
-    using System.IO;
-    using System.Threading.Tasks;
-    using System.Windows;
-    using System.Windows.Controls;
-    using VisitorsInCompany.Helpers;
-    using VisitorsInCompany.Interfaces;
-    using VisitorsInCompany.Models;
+﻿using MvvmCross.Commands;
+using MvvmCross.Navigation;
+using MvvmCross.ViewModels;
+using System.IO;
+using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Controls;
+using VisitorsInCompany.Helpers;
 
+namespace VisitorsInCompany.View.ViewModels
+{
     public class LoginViewModel : MvxViewModel
     {
         private readonly IMvxNavigationService _navigationService;

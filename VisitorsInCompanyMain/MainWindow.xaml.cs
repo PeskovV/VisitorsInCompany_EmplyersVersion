@@ -1,8 +1,7 @@
 ﻿using MvvmCross.Platforms.Wpf.Views;
-using System.Windows.Input;
 using VisitorsInCompany.Helpers;
 
-namespace VisitorsInCompany.View
+namespace VisitorsInCompanyMain
 {
    /// <summary>
    /// Interaction logic for MainWindow.xaml

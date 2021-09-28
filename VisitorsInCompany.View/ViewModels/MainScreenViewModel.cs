@@ -1,13 +1,12 @@
-﻿
-namespace VisitorsInCompany.ViewModels
-{
-    using MvvmCross.Commands;
-    using MvvmCross.Navigation;
-    using MvvmCross.ViewModels;
-    using System.Globalization;
-    using System.Threading.Tasks;
-    using System.Windows.Input;
+﻿using MvvmCross.Commands;
+using MvvmCross.Navigation;
+using MvvmCross.ViewModels;
+using System.Globalization;
+using System.Threading.Tasks;
+using System.Windows.Input;
 
+namespace VisitorsInCompany.View.ViewModels
+{
     public class MainScreenViewModel : MvxViewModel
     {
         private readonly IMvxNavigationService _navigationService;

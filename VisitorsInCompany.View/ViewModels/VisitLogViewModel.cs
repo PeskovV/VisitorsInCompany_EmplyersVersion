@@ -1,22 +1,25 @@
-﻿
-namespace VisitorsInCompany.ViewModels
-{
-    using MvvmCross.Commands;
-    using MvvmCross.Navigation;
-    using MvvmCross.ViewModels;
-    using System;
-    using System.Collections.Generic;
-    using System.Collections.ObjectModel;
-    using System.Linq;
-    using System.Threading.Tasks;
-    using System.Windows;
-    using VisitorsInCompany.Helpers;
-    using VisitorsInCompany.Interfaces;
+﻿using MvvmCross.Commands;
+using MvvmCross.Navigation;
+using MvvmCross.ViewModels;
+using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Linq;
+using System.Threading.Tasks;
+using System.Windows;
+using AutoMapper;
+using MediatR;
+using VisitorsInCompany.Contracts.Visitors;
+using VisitorsInCompany.Contracts.Visitors.Commands;
+using VisitorsInCompany.Contracts.Visitors.Queries;
 
+namespace VisitorsInCompany.View.ViewModels
+{
     public class VisitLogViewModel : MvxViewModel
     {
         private readonly IMvxNavigationService _navigationService;
-        private readonly IRepository _repo;
+        private readonly IMediator _mediator;
+        private readonly IMapper _mapper;
 
         private ObservableCollection<VisitorViewModel> _visitors;
         private VisitorViewModel _currentVisitor;
@@ -26,7 +29,7 @@ namespace VisitorsInCompany.ViewModels
 
         public IMvxAsyncCommand GoToMainScreenCommand => new MvxAsyncCommand(GoToMainScreenAsync);
         public IMvxAsyncCommand GoToReportViewCommand => new MvxAsyncCommand(GoToReportViewAsync);
-        public IMvxCommand ExitVisitorCommand => new MvxCommand(ExitVisitorAsync);
+        public IMvxCommand ExitVisitorCommand => new MvxAsyncCommand(ExitVisitorAsync);
         public IMvxCommand FormDataCommand => new MvxCommand(FormDataAsync);
 
         public ObservableCollection<VisitorViewModel> Visitors
@@ -79,38 +82,35 @@ namespace VisitorsInCompany.ViewModels
             }
         }
 
-        public VisitLogViewModel(IMvxNavigationService navigationService, IRepository repo)
+        public VisitLogViewModel(IMvxNavigationService navigationService, IMediator mediator, IMapper mapper)
         {
             _navigationService = navigationService;
-            _repo = repo;
+            _mediator = mediator;
+            _mapper = mapper;
         }
 
         public override async Task Initialize() => await base.Initialize();
 
-        public void SortCollection(string text)
+        public async Task SortCollection(string text)
         {
             if (string.IsNullOrWhiteSpace(text))
                 return;
 
-            FillInVisitors();
+            await FillInVisitors();
             var visitors = Visitors.Where(v => v.FullName.Contains(text, StringComparison.OrdinalIgnoreCase));
             Visitors = new ObservableCollection<VisitorViewModel>(visitors);
         }
 
-        private void FillInVisitors()
+        private async Task FillInVisitors()
         {
-            List<VisitorViewModel> viewModels = new List<VisitorViewModel>();
-
-            var visitors = _repo.GetAllVisitors().Where(v => (DateTime.Parse(v.EntryTime).Date >= FirstDate) && (DateTime.Parse(v.EntryTime).Date <= SecondDate));
-            foreach (var visitor in visitors)
-                viewModels.Add(new VisitorViewModel(visitor));
-
-            Visitors = new ObservableCollection<VisitorViewModel>(viewModels);
+            var dtos = await _mediator.Send(new GetAllVisitorsQuery(FirstDate, SecondDate));
+            var visitors = _mapper.Map<IEnumerable<VisitorViewModel>>(dtos);
+            Visitors = new ObservableCollection<VisitorViewModel>(visitors);
         }
 
-        private void ExitVisitorAsync()
+        private async Task ExitVisitorAsync()
         {
-            if (!string.IsNullOrWhiteSpace(CurrentVisitor.Visitor.ExitTime))
+            if (!string.IsNullOrWhiteSpace(CurrentVisitor.ExitTime))
             {
                 MessageBox.Show("Посетитель уже вышел");
                 return;
@@ -118,8 +118,9 @@ namespace VisitorsInCompany.ViewModels
 
             if (MessageBox.Show("Установить факт выхода посетителя?", "Подтвердите своё действие", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
             {
-                CurrentVisitor.Visitor.ExitTime = DateTime.Now.ToString();
-                _repo.RemoveFromOrganization(CurrentVisitor.Visitor);
+                CurrentVisitor.ExitTime = DateTime.Now.ToString();
+                var dto = _mapper.Map<VisitorDto>(CurrentVisitor);
+                await _mediator.Send(new RemoveVisitorFromOrganizationCommand(dto));
             }
             //await _navigationService.Navigate<MainScreenViewModel>();
         }
