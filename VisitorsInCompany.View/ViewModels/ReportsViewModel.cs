@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Threading;
 using VisitorsInCompany.Helpers;
-using VisitorsInCompany.Views;
+using VisitorsInCompany.View.Views;
 
 namespace VisitorsInCompany.View.ViewModels
 {
@@ -25,7 +25,7 @@ namespace VisitorsInCompany.View.ViewModels
         public IMvxAsyncCommand GoToVisitLogCommand => new MvxAsyncCommand(GoToVisitLogAsync);
         public IMvxAsyncCommand BackupCommand => new MvxAsyncCommand(BackupAsync);
 
-        public ReportsViewModel(IMvxNavigationService navigationService, IRepository repo)
+        public ReportsViewModel(IMvxNavigationService navigationService)
         {
             _navigationService = navigationService;
         }

@@ -7,20 +7,26 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
+using AutoMapper;
+using MediatR;
+using VisitorsInCompany.Contracts.Visitors;
+using VisitorsInCompany.Contracts.Visitors.Commands;
+using VisitorsInCompany.Contracts.Visitors.Queries;
 
 namespace VisitorsInCompany.View.ViewModels
 {
     public class CurrentVisitorReportViewModel : MvxViewModel
     {
         private readonly IMvxNavigationService _navigationService;
-        private readonly IRepository _repo;
+        private readonly IMapper _mapper;
+        private readonly IMediator _mediator;
 
         private ObservableCollection<VisitorViewModel> _visitors;
         private VisitorViewModel _currentVisitor;
 
         public IMvxAsyncCommand GoToMainScreenCommand => new MvxAsyncCommand(GoToMainScreenAsync);
         public IMvxAsyncCommand GoToReportViewCommand => new MvxAsyncCommand(GoToReportViewAsync);
-        public IMvxCommand ExitVisitorCommand => new MvxCommand(ExitVisitorAsync);
+        public IMvxCommand ExitVisitorCommand => new MvxAsyncCommand(ExitVisitorAsync);
 
         public ObservableCollection<VisitorViewModel> Visitors
         {
@@ -42,48 +48,47 @@ namespace VisitorsInCompany.View.ViewModels
             }
         }
 
-        public CurrentVisitorReportViewModel(IMvxNavigationService navigationService, IRepository repo)
+        public CurrentVisitorReportViewModel(IMvxNavigationService navigationService, IMapper mapper,
+            IMediator mediator)
         {
             _navigationService = navigationService;
-            _repo = repo;
+            _mapper = mapper;
+            _mediator = mediator;
         }
 
         public override async Task Initialize()
         {
-            FillInVisitors();
+            await FillInVisitors();
             await base.Initialize();
         }
 
-        public void SortCollection(string text)
+        //ToDo посмотреть нужен ли здесь FillInVisitors
+        public async Task SortCollection(string text)
         {
             if (string.IsNullOrWhiteSpace(text))
                 return;
 
-            FillInVisitors();
-
-            var visitors = Visitors.Where(v => v.FullName.Contains(text, StringComparison.OrdinalIgnoreCase));
-            Visitors = new ObservableCollection<VisitorViewModel>();
+            await FillInVisitors();
+            
+            Visitors = new ObservableCollection<VisitorViewModel>(Visitors.Where(v => v.FullName.Contains(text, StringComparison.OrdinalIgnoreCase)));
         }
 
-        private void FillInVisitors()
+        private async Task FillInVisitors()
         {
-            List<VisitorViewModel> viewModels = new List<VisitorViewModel>();
-            foreach (var item in _repo.GetNotExitVisitors())
-                viewModels.Add(new VisitorViewModel(item));
-
-            Visitors = new ObservableCollection<VisitorViewModel>(viewModels);
+            var visitors = _mapper.Map<IEnumerable<VisitorViewModel>>(await _mediator.Send(new GetNotExitVisitorsQuery()));
+            Visitors = new ObservableCollection<VisitorViewModel>(visitors);
         }
 
-        private void ExitVisitorAsync()
+        private async Task ExitVisitorAsync()
         {
             var result = MessageBox.Show("Установить факт выхода посетителя?", "Подтвердите действие", MessageBoxButton.YesNo, MessageBoxImage.Question);
             if (result == MessageBoxResult.Yes)
             {
-                CurrentVisitor.Visitor.ExitTime = DateTime.Now.ToString();
-                _repo.RemoveFromOrganization(CurrentVisitor.Visitor);
+                CurrentVisitor.ExitTime = DateTime.Now.ToString();
+                var dto = _mapper.Map<VisitorDto>(CurrentVisitor);
+                await _mediator.Send(new RemoveVisitorFromOrganizationCommand(dto));
                 Visitors.Remove(CurrentVisitor);
             }
-            //await _navigationService.Navigate<MainScreenViewModel>();
         }
 
         private async Task GoToMainScreenAsync() =>

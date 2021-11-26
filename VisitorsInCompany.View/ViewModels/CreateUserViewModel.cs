@@ -6,14 +6,21 @@ using System.Globalization;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
+using AutoMapper;
+using MediatR;
+using VisitorsInCompany.Contracts.Visitors;
+using VisitorsInCompany.Contracts.Visitors.Commands;
+using VisitorsInCompany.Contracts.Visitors.Queries;
 using VisitorsInCompany.Helpers;
+using VisitorsInCompany.Model.Models;
 
 namespace VisitorsInCompany.View.ViewModels
 {
     public class CreateUserViewModel : MvxViewModel
     {
         private readonly IMvxNavigationService _navigationService;
-        private readonly IRepository _repo;
+        private readonly IMapper _mapper;
+        private readonly IMediator _mediator;
 
         private bool _isRussian = InputLanguageManager.Current.CurrentInputLanguage.Name == "ru-RU";
 
@@ -35,10 +42,11 @@ namespace VisitorsInCompany.View.ViewModels
         }
 
 
-        public CreateUserViewModel(IMvxNavigationService navigationService, IRepository repo)
+        public CreateUserViewModel(IMvxNavigationService navigationService, IMapper mapper, IMediator mediator)
         {
             _navigationService = navigationService;
-            _repo = repo;
+            _mapper = mapper;
+            _mediator = mediator;
             VisitorVM = new VisitorViewModel();
         }
 
@@ -56,22 +64,23 @@ namespace VisitorsInCompany.View.ViewModels
 
         private async Task CreateUserAsync()
         {
-            if (!VerifyFullData(VisitorVM.Visitor))
+            if (!VerifyFullData(VisitorVM))
             {
                 MessageBox.Show("Заполните все поля\\ Fill all fields", "Warning");
                 return;
             }
-            if (_repo.VerifyExitVisitor(VisitorVM.Visitor))
+
+            if (await _mediator.Send(new VerifyExitVisitorQuery(_mapper.Map<VisitorDto>(VisitorVM))))
             {
-                VisitorVM.Visitor.EntryTime = DateTime.Now.ToString();
-                _repo.Add(VisitorVM.Visitor);
+                VisitorVM.EntryTime = DateTime.Now.ToString();
+                await _mediator.Send(new AddVisitorCommand(_mapper.Map<VisitorDto>(VisitorVM)));
                 await GoToMainScreenAsync();
             }
             else
                 MessageBox.Show("Просим, вас, обратиться к службе безопасности", "Пользователь в организации");
         }
 
-        private bool VerifyFullData(Visitor visitor)
+        private bool VerifyFullData(VisitorViewModel visitor)
         {
             var result =
                 string.IsNullOrWhiteSpace(visitor.FirstName)

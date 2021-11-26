@@ -7,13 +7,19 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
+using AutoMapper;
+using MediatR;
+using VisitorsInCompany.Contracts.Visitors;
+using VisitorsInCompany.Contracts.Visitors.Commands;
+using VisitorsInCompany.Contracts.Visitors.Queries;
 
 namespace VisitorsInCompany.View.ViewModels
 {
     public class BelatedVisitorReportViewModel : MvxViewModel
     {
         private readonly IMvxNavigationService _navigationService;
-        private readonly IRepository _repo;
+        private readonly IMapper _mapper;
+        private readonly IMediator _mediator;
 
         private ObservableCollection<VisitorViewModel> _visitors;
         private VisitorViewModel _currentVisitor;
@@ -21,10 +27,11 @@ namespace VisitorsInCompany.View.ViewModels
         private DateTime _secondDate = DateTime.Now;
         private bool _formedData;
 
-        public BelatedVisitorReportViewModel(IMvxNavigationService navigationService, IRepository repo)
+        public BelatedVisitorReportViewModel(IMvxNavigationService navigationService, IMapper mapper, IMediator mediator)
         {
             _navigationService = navigationService;
-            _repo = repo;
+            _mapper = mapper;
+            _mediator = mediator;
         }
 
         public ObservableCollection<VisitorViewModel> Visitors
@@ -82,22 +89,20 @@ namespace VisitorsInCompany.View.ViewModels
             await base.Initialize();
         }
 
-        private void FillInVisitors()
+        private async Task FillInVisitors()
         {
             List<VisitorViewModel> viewModel = new List<VisitorViewModel>();
 
-            var visitors = _repo.GetNotExitVisitors().Where(v => (DateTime.Parse(v.EntryTime).Date >= FirstDate) && (DateTime.Parse(v.EntryTime).Date <= SecondDate));
-
-            foreach (var visitor in visitors)
-                viewModel.Add(new VisitorViewModel(visitor));
-
-            Visitors = new ObservableCollection<VisitorViewModel>(viewModel);
+            var visitors = (await _mediator.Send(new GetNotExitVisitorsQuery()))
+                .Where(v => (DateTime.Parse(v.EntryTime).Date >= FirstDate) &&
+                            (DateTime.Parse(v.EntryTime).Date <= SecondDate));
+            Visitors = new ObservableCollection<VisitorViewModel>(_mapper.Map<IEnumerable<VisitorViewModel>>(visitors));
         }
 
-        public void SortCollection(string text)
+        public async Task SortCollection(string text)
         {
             text = text.ToLower();
-            FillInVisitors();
+            await FillInVisitors();
             if (!string.IsNullOrWhiteSpace(text))
                 Visitors = new ObservableCollection<VisitorViewModel>(Visitors.Where(v => v.FullName.ToLower().Contains(text)));
         }
@@ -115,15 +120,16 @@ namespace VisitorsInCompany.View.ViewModels
             await _navigationService.Navigate<ReportsViewModel>();
 
         public IMvxCommand ExitVisitorCommand => 
-            new MvxCommand(ExitVisitorAsync);
+            new MvxAsyncCommand(ExitVisitorAsync);
 
-        private void ExitVisitorAsync()
+        private async Task ExitVisitorAsync()
         {
             var result = MessageBox.Show("Установить факт выхода посетителя?", "Подтвердите своё действие", MessageBoxButton.YesNo, MessageBoxImage.Question);
             if (result == MessageBoxResult.Yes)
             {
-                CurrentVisitor.Visitor.ExitTime = DateTime.Now.ToString();
-                _repo.RemoveFromOrganization(CurrentVisitor.Visitor);
+                CurrentVisitor.ExitTime = DateTime.Now.ToString();
+                var dto = _mapper.Map<VisitorDto>(CurrentVisitor);
+                await _mediator.Send(new RemoveVisitorFromOrganizationCommand(dto));
                 Visitors.Remove(CurrentVisitor);
             }
             //await _navigationService.Navigate<MainScreenViewModel>();

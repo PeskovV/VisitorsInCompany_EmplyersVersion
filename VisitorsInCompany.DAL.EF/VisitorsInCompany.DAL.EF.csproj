@@ -13,4 +13,8 @@
       <ProjectReference Include="..\VisitorsInCompany.Model\VisitorsInCompany.Model.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="Repositories" />
+    </ItemGroup>
+
 </Project>

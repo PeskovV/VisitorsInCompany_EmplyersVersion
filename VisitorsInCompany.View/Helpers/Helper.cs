@@ -10,7 +10,7 @@ namespace VisitorsInCompany.Helpers
         internal static int GetTimeBeforeSearch() => 
             _timeBeforeSearch;
 
-        internal static void KillOSKProcess()
+        public static void KillOSKProcess()
         {
             foreach (var item in Process.GetProcessesByName("osk"))
                 item.Kill();

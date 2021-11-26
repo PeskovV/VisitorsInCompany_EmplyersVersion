@@ -17,8 +17,8 @@ namespace VisitorsInCompany.View.ViewModels
         public IMvxAsyncCommand GoToMainScreenCommand => new MvxAsyncCommand(GoToMainScreenAsync);
         public IMvxAsyncCommand<PasswordBox> LoginCommand => new MvxAsyncCommand<PasswordBox>(LoginAsync);
 
-        private Admin _admin;
-        public Admin Admin
+        private AdminViewModel _admin;
+        public AdminViewModel Admin
         {
             get => _admin;
             set
@@ -28,10 +28,10 @@ namespace VisitorsInCompany.View.ViewModels
             }
         }
 
-        public LoginViewModel(IMvxNavigationService navigationService, IRepository repo)
+        public LoginViewModel(IMvxNavigationService navigationService)
         {
             _navigationService = navigationService;
-            Admin = new Admin();
+            Admin = new AdminViewModel();
             _iniManager = new INIManager($@"{Directory.GetCurrentDirectory()}\conf\config.ini");
         }
 

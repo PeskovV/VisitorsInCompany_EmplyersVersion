@@ -1,6 +1,7 @@
 ﻿using MvvmCross.Core;
 using MvvmCross.Platforms.Wpf.Core;
 using MvvmCross.Platforms.Wpf.Views;
+using VisitorsInCompanyMain;
 
 namespace VisitorsInCompany.View
 {
@@ -14,6 +15,7 @@ namespace VisitorsInCompany.View
          //Mvx.IoCProvider.LazyConstructAndRegisterSingleton<AppContext, AppContext>();
          //Mvx.IoCProvider.RegisterType<IRepository, VisitorRepository>();
          this.RegisterSetupType<MvxWpfSetup<CustomApp>>();
+         
       }
    }
 }
